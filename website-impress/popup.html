@@ -1,0 +1,52 @@
+<html>
+<head>
+<style type='text/css'>
+* { font-family: sans-serif; font-weight: normal; }
+body { color: #444; background-color: #fff; cursor: default; }
+h1 { font-size: 16px; }
+h2 { font-size: 14px; margin-bottom: 0; }
+a { font-size: 12px; color: #666; text-decoration: none; }
+</style>
+<script type='text/javascript'>
+function newTab(type, url) {
+	if(type == 'link')
+		chrome.tabs.create({url: url});
+	else if(type == 'appenddomain') {
+		chrome.tabs.getSelected(null, function(tab){
+			var domain = tab.url;
+			domain = domain.match(/^http[s]?:\/\/.*?([a-z\-]+\.[a-z\-]+)\/.*?$/i);
+			chrome.tabs.create({url: url+domain[1]});
+		});
+	}
+}
+
+function getAlexa(url){
+	url = 'http://data.alexa.com/data?cli=10&url=' + url;
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', url, false);
+	xhr.send(null);
+	var xmlDoc = xhr.responseXML;
+	var info = xmlDoc.documentElement.getElementsByTagName("REACH")[0];
+	var alexaRank=info.getAttribute("RANK");
+	return alexaRank;
+}
+</script>
+</head>
+<body>
+	<div style='width: 180px;'>
+		<h1>PageRank Display</h1>
+		<p>
+			<h2>Info about site</h2>
+			<a href="javascript:newTab('appenddomain', 'http://www.google.com/search?q=site:');">Google indexed pages</a><br>
+			<a href="javascript:newTab('appenddomain', 'http://www.bing.com/search?q=linkfromdomain:');">Bing external links</a><br>
+			<a href="javascript:newTab('appenddomain', 'http://siteexplorer.search.yahoo.com/search?bwm=i&bwmo=d&bwmf=s&p=');">Yahoo! backlinks</a><br>
+			<a href="javascript:newTab('appenddomain', 'http://www.alexa.com/siteinfo/');">Alexa information</a>
+		</p>
+		<p>
+			<h2>Useful links</h2>
+			<a href="javascript:newTab('link', 'http://www.google.com/analytics/');">Google Analytics</a><br>
+			<a href="javascript:newTab('link', 'http://www.google.com/webmasters/tools/');">Google Webmaster Tools</a>
+		</p>
+	</div>
+</body>
+</html>

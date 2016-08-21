@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+
+</head>
+<body>
+<canvas id="canvas" width="19" height="19">
+</canvas>
+<script type="text/javascript">
+var canvas = document.getElementById('canvas');
+var context = canvas.getContext('2d');
+	
+var prY=9.5;
+
+var imageData = context.getImageData(0, 0, 19, 19);
+
+function setPR(pr){
+	var INTERVAL = 10;
+	var prWidth = pr*18/10;
+	
+	context.clearRect(1, 10, 18, 7);
+	context.fillStyle = 'green';
+	context.fillRect(1,prY+0.5,prWidth,7);
+	context.strokeStyle ="#000";
+	context.lineWidth = 1;
+	context.strokeRect(0,prY,19,8);//
+}
+
+function setAlexa(alexa){
+	var INTERVAL=7;//0~7 1,11,101,1K,1W,10W,100W,1000W
+	var i=0;var temp=alexa;
+	while(temp/10>1){
+		temp/=10;
+		i++;
+	}
+
+	var alexaWidth=(INTERVAL-i)/INTERVAL*19;
+	context.clearRect(1, 1, 18, 6);
+	context.fillStyle = 'blue';
+	context.fillRect(0,0,alexaWidth,7);
+	context.strokeStyle ="#000";
+	context.lineWidth = 1;
+	context.strokeRect(0,0,19,7.5);
+}
+
+function setBaiduKoubei(baiduKoubeiRank){
+    ICON_WIDTH = 20;
+    LINE_WIDTH = 1;
+    this.rank_out_rect = [0, 4, ICON_WIDTH-1, 7.5]; //  x, y , width, heigh
+
+    var baiduKoubeiWidth = parseInt(baiduKoubeiRank)/10 * ((ICON_WIDTH - LINE_WIDTH * 2) / 10.0);
+    console.log(baiduKoubeiWidth);
+    if(baiduKoubeiRank >= 80){
+        context.fillStyle = 'green';
+    }else if(baiduKoubeiRank >=60){
+        context.fillStyle = 'orange';
+    }else{
+        context.fillStyle = 'red';
+    }
+    context.clearRect(this.rank_out_rect[0], this.rank_out_rect[1], 
+        this.rank_out_rect[2], this.rank_out_rect[3]);
+    context.fillRect(this.rank_out_rect[0] + LINE_WIDTH, this.rank_out_rect[1], 
+        baiduKoubeiWidth, this.rank_out_rect[3]);
+    context.strokeStyle ="#000";
+    context.lineWidth = 1;
+    context.strokeRect(this.rank_out_rect[0], this.rank_out_rect[1], 
+        this.rank_out_rect[2], this.rank_out_rect[3]);
+
+}
+
+// setPR(0);
+//setAlexa(50000000);
+setBaiduKoubei(80);
+
+
+var type = 'png';
+var imgData = canvas.toDataURL(type);
+
+
+var _fixType = function(type) {
+    type = type.toLowerCase().replace(/jpg/i, 'jpeg');
+    var r = type.match(/png|jpeg|bmp|gif/)[0];
+    return 'image/' + r;
+};
+   
+// 加工image data，替换mime type
+imgData = imgData.replace(_fixType(type),'image/octet-stream');
+
+
+/**
+ * 在本地进行文件保存
+ * @param  {String} data     要保存到本地的图片数据
+ * @param  {String} filename 文件名
+ */
+var saveFile = function(data, filename){
+    var save_link = document.createElementNS('http://www.w3.org/1999/xhtml', 'a');
+    save_link.href = data;
+    save_link.download = filename;
+   
+    var event = document.createEvent('MouseEvents');
+    event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+    save_link.dispatchEvent(event);
+};
+   
+// 下载后的问题名
+var filename = 'img' + (new Date()).getTime() + '.' + type;
+// download
+// saveFile(imgData,filename);
+
+
+</script>
+
+</body>
+</html>
