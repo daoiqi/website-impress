@@ -71,7 +71,8 @@ function UpdateObject() {
 		});
 		console.log("webrank=" + webRank);
 		console.log(tag_map);
-		this.displayValue = webRank;
+		this.originValue = webRank;
+		this.displayValue = parseInt((parseInt(webRank) / 10));  // 将0-100分 映射到0-10分  
 		this.baiduKoubeiTagMap = tag_map; 
 		this.baiduKoubeiRank = parseInt(webRank);
 	},
@@ -89,8 +90,9 @@ function UpdateObject() {
 	this.updateIcon=function(){
 		var icon = this.getIcon();
 		var displayValue = this.displayValue || '?';
+		displayValue = "" + displayValue; 
 		var title = displayValue == '?' ? (this.domain + ' 暂时没有收录百度口碑值')
-                		 : this.domain + (" 百度口碑好评率 " + this.displayValue + "%");
+                		 : this.domain + (" 百度口碑好评率 " + this.baiduKoubeiRank + "%");
 		var tabId = this.tabId;
 		chrome.browserAction.setBadgeText({text: displayValue, 'tabId': tabId});
 		chrome.browserAction.setBadgeBackgroundColor({color: displayValue == '?' ? [190, 190, 190, 230] : [208, 0, 24, 255], 'tabId': tabId});
