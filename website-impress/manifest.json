@@ -12,7 +12,7 @@
    "name": "Website Impress",
    "permissions": [ "tabs", "https://koubei.baidu.com/", "http://koubei.baidu.com/"],
    "update_url": "https://clients2.google.com/service/update2/crx",
-   "version": "1.0",
+   "version": "1.1",
    "content_scripts": [
       {
          "matches": ["http://*/", "https://*/"],
