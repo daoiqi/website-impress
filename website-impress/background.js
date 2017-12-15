@@ -59,7 +59,9 @@ function UpdateObject() {
 		var $jQueryObject = $($.parseHTML(data));
 
 		var regex = /(.+)\s(\d+)/;  // such "好评 3"
-		var webRank = $jQueryObject.find('.praise-text').attr('data-num');
+		// var webRank = $jQueryObject.find('.praise-text').attr('data-num');
+                var _tmp = $jQueryObject.find('.kb-coi-praise > span').text();
+                var webRank = _tmp.substring(0, _tmp.indexOf('%'));
 
 		$.each($jQueryObject.find(".kb-tags-list .tag-item"), function(idx, item){
 			var text = $(item).text().trim();
