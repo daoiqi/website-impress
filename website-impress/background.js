@@ -9,6 +9,12 @@ var LINE_WIDTH = 1;
 var imageData = context.getImageData(0, 0, ICON_WIDTH-1, ICON_WIDTH-1);
 
 
+function sort_down(x, y){
+	// 降序排序
+    return y.count - x.count;
+}
+
+
 function UpdateObject() {
 	this.url = "",
 	this.domain = "",
@@ -16,6 +22,7 @@ function UpdateObject() {
 	this.displayValue="?",
 	this.baiduKoubeiRank = 0,
 	this.baiduKoubeiTagMap = {},
+	this.baiduKoubeiTagList = [],
 	this.rank_out_rect = [0, 4, ICON_WIDTH-1, 7.5], //  x, y , width, heigh
 
 
@@ -55,7 +62,8 @@ function UpdateObject() {
 	this.handlerBaiduImpress=function(data){
 		// console.log(data);
 		var $ = jQuery;
-		tag_map = {};
+		var tag_map = {};
+		var tag_list = [];
 		var $jQueryObject = $($.parseHTML(data));
 
 		var regex = /(.+)\s(\d+)/;  // such "好评 3"
@@ -67,15 +75,17 @@ function UpdateObject() {
 			var text = $(item).text().trim();
 			if(text == "全部"){
 				return;
-			}
+			} 
 			var matchs = regex.exec(text);
 			tag_map[matchs[1]] = matchs[2];
+			tag_list.push({'name': matchs[1], 'count':matchs[2]});
 		});
 		console.log("webrank=" + webRank);
 		console.log(tag_map);
 		this.originValue = webRank;
 		this.displayValue = parseInt((parseInt(webRank) / 10));  // 将0-100分 映射到0-10分  
-		this.baiduKoubeiTagMap = tag_map; 
+		this.baiduKoubeiTagMap = tag_map;
+		this.baiduKoubeiTagList = tag_list;
 		this.baiduKoubeiRank = parseInt(webRank);
 	},
 
@@ -93,8 +103,20 @@ function UpdateObject() {
 		var icon = this.getIcon();
 		var displayValue = this.displayValue || '?';
 		displayValue = "" + displayValue; 
+		var show_has_rank = [
+			this.domain + (" 百度口碑好评率 " + this.baiduKoubeiRank + "%")
+		];
+		if(this.baiduKoubeiTagList.length > 0){
+			show_has_rank.push('');
+			show_has_rank.push('网友的评价:');
+
+			$.each(this.baiduKoubeiTagList, function(idx, item){
+				show_has_rank.push('  ' + item['name'] + ' ' + item['count'])
+			});
+		}
+ 
 		var title = displayValue == '?' ? (this.domain + ' 暂时没有收录百度口碑值')
-                		 : this.domain + (" 百度口碑好评率 " + this.baiduKoubeiRank + "%");
+                		 : show_has_rank.join('\r\n');
 		var tabId = this.tabId;
 		chrome.browserAction.setBadgeText({text: displayValue, 'tabId': tabId});
 		chrome.browserAction.setBadgeBackgroundColor({color: displayValue == '?' ? [190, 190, 190, 230] : [208, 0, 24, 255], 'tabId': tabId});
